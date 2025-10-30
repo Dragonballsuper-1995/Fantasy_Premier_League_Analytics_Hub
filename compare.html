@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPL Player Comparison</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <style>
+        /* All the styles from your original file... */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px;}
+        .dark ::-webkit-scrollbar-track { background: #2d3748; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        body, .bg-white, .bg-gray-100, .bg-gray-50, .text-gray-900, .text-gray-600, .border-gray-200 {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        .animate-fadeIn { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .suggestion-active { background-color: #4f46e5; color: #ffffff; }
+        .dark .suggestion-active { background-color: #4f46e5; }
+        
+        /* ...All other styles for pitch, players, etc., are removed as they aren't on this page */
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans min-h-screen">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <header class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-bold">FPL Player Dashboard</h1>
+                <p class="text-gray-600 dark:text-gray-400 mt-1">ML-powered predictions to build your best squad.</p>
+            </div>
+            <button id="themeToggle" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none" aria-label="Toggle dark mode">
+                <svg id="themeIconSun" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /> </svg>
+                <svg id="themeIconMoon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /> </svg>
+            </button>
+        </header>
+
+        <nav class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg flex justify-center gap-4">
+            <a href="index.html" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">Home</a>
+            <a href="compare.html" class="px-4 py-2 text-sm font-bold bg-indigo-600 text-white rounded-md shadow">Compare Players</a>
+            <a href="watchlist.html" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">Watchlists</a>
+            <a href="squad.html" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">Squad Builder</a>
+        </nav>
+
+        <div class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+            <label for="modelSelector" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Prediction Model</label>
+            <select id="modelSelector" class="w-full md:w-1/2 p-2.5 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 font-bold focus:outline-none">
+            </select>
+        </div>
+        
+        <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 animate-fadeIn">
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg text-center">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Total Players</p>
+                <p class="text-3xl font-bold" id="totalPlayers">--</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg text-center">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Available</p>
+                <p class="text-3xl font-bold text-green-600 dark:text-green-500" id="availablePlayers">--</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg text-center">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Injured / Doubtful</p>
+                <p class="text-3xl font-bold text-red-600 dark:text-red-500" id="injuredPlayers">--</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div id="playerColumn1" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
+                <h2 class="text-2xl font-bold mb-4">Player 1</h2>
+                <div class="mb-6">
+                    <label for="searchInput1" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search Player 1</label>
+                    <div class="relative">
+                        <input type="text" id="searchInput1" placeholder="Loading players..." disabled class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-gray-50 disabled:opacity-50">
+                        <div id="searchSuggestions1" class="absolute z-10 w-full max-h-60 overflow-y-auto bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg mt-1 shadow-lg hidden"></div>
+                    </div>
+                </div>
+                <div id="results1" class="hidden animate-fadeIn space-y-6">
+                    <div id="playerCard1"></div>
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-2" id="chartTitle1">Points Trend</h3>
+                        <div style="height: 250px;"><canvas id="pointsChart1"></canvas></div>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-3">Upcoming Fixtures</h3>
+                        <div id="upcomingFixturesList1" class="space-y-2"></div>
+                    </div>
+                </div>
+                <div id="noResults1" class="hidden text-center py-10"><p class="text-gray-500 dark:text-gray-400">No player found.</p></div>
+            </div>
+
+            <div id="playerColumn2" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
+                <h2 class="text-2xl font-bold mb-4">Player 2</h2>
+                <div class="mb-6">
+                    <label for="searchInput2" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search Player 2</label>
+                    <div class="relative">
+                        <input type="text" id="searchInput2" placeholder="Loading players..." disabled class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all bg-gray-50 disabled:opacity-50">
+                        <div id="searchSuggestions2" class="absolute z-10 w-full max-h-60 overflow-y-auto bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg mt-1 shadow-lg hidden"></div>
+                    </div>
+                </div>
+                <div id="results2" class="hidden animate-fadeIn space-y-6">
+                    <div id="playerCard2"></div>
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-2" id="chartTitle2">Points Trend</h3>
+                        <div style="height: 250px;"><canvas id="pointsChart2"></canvas></div>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-3">Upcoming Fixtures</h3>
+                        <div id="upcomingFixturesList2" class="space-y-2"></div>
+                    </div>
+                </div>
+                <div id="noResults2" class="hidden text-center py-10"><p class="text-gray-500 dark:text-gray-400">No player found.</p></div>
+            </div>
+        </div>
+
+        <footer class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+            <p id="loadingStatus">Loading prediction data...</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // === JAVASCRIPT LOGIC ===
+
+        let chartInstance1 = null;
+        let chartInstance2 = null;
+        let currentPlayer1 = null;
+        let currentPlayer2 = null;
+        let ALL_PLAYER_DATA = [];
+        let ALL_MODELS = [];
+        let activeSuggestion = { 1: -1, 2: -1 };
+        let filteredPlayersStore = { 1: [], 2: [] };
+
+        // --- Get DOM elements ---
+        const modelSelector = document.getElementById('modelSelector');
+        
+        const searchInput1 = document.getElementById('searchInput1');
+        const searchSuggestions1 = document.getElementById('searchSuggestions1');
+        const loadingStatus = document.getElementById('loadingStatus');
+        const results1 = document.getElementById('results1');
+        const noResults1 = document.getElementById('noResults1');
+        const playerCard1 = document.getElementById('playerCard1');
+        const chartTitle1 = document.getElementById('chartTitle1');
+        const chartCanvas1 = document.getElementById('pointsChart1');
+        const upcomingFixturesList1 = document.getElementById('upcomingFixturesList1');
+
+        const searchInput2 = document.getElementById('searchInput2');
+        const searchSuggestions2 = document.getElementById('searchSuggestions2');
+        const results2 = document.getElementById('results2');
+        const noResults2 = document.getElementById('noResults2');
+        const playerCard2 = document.getElementById('playerCard2');
+        const chartTitle2 = document.getElementById('chartTitle2');
+        const chartCanvas2 = document.getElementById('pointsChart2');
+        const upcomingFixturesList2 = document.getElementById('upcomingFixturesList2');
+
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIconMoon = document.getElementById('themeIconMoon');
+        const themeIconSun = document.getElementById('themeIconSun');
+
+        const totalPlayersEl = document.getElementById('totalPlayers');
+        const availablePlayersEl = document.getElementById('availablePlayers');
+        const injuredPlayersEl = document.getElementById('injuredPlayers');
+
+
+        // --- Dark Mode Logic ---
+        const applyTheme = (theme) => {
+            const isDark = theme === 'dark';
+            document.documentElement.classList.toggle('dark', isDark);
+            themeIconSun.classList.toggle('hidden', isDark);
+            themeIconMoon.classList.toggle('hidden', !isDark);
+            if (currentPlayer1) updatePlayerDisplay(1, currentPlayer1);
+            if (currentPlayer2) updatePlayerDisplay(2, currentPlayer2);
+        };
+        themeToggle.addEventListener('click', () => {
+            const newTheme = document.documentElement.classList.toggle('dark') ? 'dark' : 'light';
+            localStorage.theme = newTheme;
+            applyTheme(newTheme);
+        });
+        const savedTheme = localStorage.theme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        applyTheme(savedTheme);
+
+        // --- Data Fetching Logic ---
+        async function loadData() {
+            try {
+                const response = await fetch(`predictions.json?v=${new Date().getTime()}`);
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                
+                const responseText = await response.text();
+                if (responseText.includes('NaN')) {
+                    throw new Error("Invalid JSON: 'NaN' found in predictions.json. Please re-run 'python main.py'.");
+                }
+
+                ALL_PLAYER_DATA = JSON.parse(responseText);
+                
+                if (!Array.isArray(ALL_PLAYER_DATA) || ALL_PLAYER_DATA.length === 0) {
+                     throw new Error("'predictions.json' is empty or not a valid array.");
+                }
+                
+                const firstPlayerWithData = ALL_PLAYER_DATA.find(p => p.upcoming_predictions && p.upcoming_predictions.length > 0 && p.upcoming_predictions[0].predictions);
+                if (firstPlayerWithData) {
+                    ALL_MODELS = Object.keys(firstPlayerWithData.upcoming_predictions[0].predictions);
+                    modelSelector.innerHTML = ALL_MODELS.map(model => {
+                        const isRecommended = model.includes('XGBoost') || model.includes('Random Forest');
+                        return `<option value="${model}">${model}${isRecommended ? ' (Rec.)' : ''}</option>`
+                    }).join('');
+                    if (ALL_MODELS.includes('XGBoost')) {
+                        modelSelector.value = 'XGBoost';
+                    }
+                } else {
+                    console.warn("No players found with valid prediction data. Using default model list.");
+                }
+
+                searchInput1.disabled = false;
+                searchInput1.placeholder = "e.g., Haaland, Saka, Palmer...";
+                searchInput2.disabled = false;
+                searchInput2.placeholder = "e.g., Foden, Son, Salah...";
+                loadingStatus.textContent = `Successfully loaded ${ALL_PLAYER_DATA.length} players.`;
+                
+                calculateGlobalStats();
+                
+                // *** NEW: Check for URL parameter to auto-load a player ***
+                checkURLParams();
+                
+                console.log("Loaded player prediction data:", ALL_PLAYER_DATA);
+
+            } catch (error) {
+                console.error("Error loading predictions.json:", error);
+                loadingStatus.innerHTML = `
+                    <strong class="text-red-600 dark:text-red-400">Error: Could not load data.</strong><br>
+                    ${error.message}<br>
+                    <strong>To fix:</strong>
+                    <ol class="list-decimal list-inside">
+                        <li>Run <code class="bg-gray-200 dark:bg-gray-700 p-1 rounded">python main.py</code> to regenerate 'predictions.json'.</li>
+                        <li>Make sure your server <code class="bg-gray-200 dark:bg-gray-700 p-1 rounded">python -m http.server</code> is running.</li>
+                        <li>Refresh the page.</li>
+                    </ol>`;
+            }
+        }
+        document.addEventListener('DOMContentLoaded', loadData);
+        
+        // *** NEW: Function to check URL for a player ID ***
+        function checkURLParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const player1Id = urlParams.get('player1'); // e.g., ?player1=123
+            
+            if (player1Id && ALL_PLAYER_DATA.length > 0) {
+                // Use == for coercion as ID might be string or number
+                const player = ALL_PLAYER_DATA.find(p => p.id == player1Id); 
+                if (player) {
+                    displayPlayerData(player, 1);
+                } else {
+                    console.warn(`Player with ID ${player1Id} not found.`);
+                }
+            }
+        }
+
+        // --- Global Stats Function ---
+        function calculateGlobalStats() {
+            const totalPlayers = ALL_PLAYER_DATA.length;
+            const availablePlayers = ALL_PLAYER_DATA.filter(p => p.chance_of_playing === 100 || p.chance_of_playing == null).length;
+            const injuredPlayers = totalPlayers - availablePlayers;
+
+            totalPlayersEl.textContent = totalPlayers;
+            availablePlayersEl.textContent = availablePlayers;
+            injuredPlayersEl.textContent = injuredPlayers;
+        }
+
+        // --- Global Control Listeners ---
+        modelSelector.addEventListener('change', () => {
+            if (currentPlayer1) updatePlayerDisplay(1, currentPlayer1);
+            if (currentPlayer2) updatePlayerDisplay(2, currentPlayer2);
+        });
+
+        // --- Search Logic ---
+        searchInput1.addEventListener('input', (e) => handleSearch(e.target.value, 1));
+        searchInput2.addEventListener('input', (e) => handleSearch(e.target.value, 2));
+
+        function handleSearch(query, slot) {
+            const suggestionsEl = (slot === 1) ? searchSuggestions1 : searchSuggestions2;
+            const noResultsEl = (slot === 1) ? noResults1 : noResults2;
+            activeSuggestion[slot] = -1; 
+
+            query = query.toLowerCase().trim();
+            if (query.length < 2) {
+                clearSuggestions(slot);
+                hideResults(slot);
+                return;
+            }
+            const filteredPlayers = ALL_PLAYER_DATA.filter(p =>
+                p.web_name && p.web_name.toLowerCase().includes(query)
+            ).sort((a,b) => a.web_name.localeCompare(b.web_name));
+            
+            filteredPlayersStore[slot] = filteredPlayers; 
+
+            if (filteredPlayers.length > 0) {
+                showSuggestions(filteredPlayers, slot);
+                noResultsEl.classList.add('hidden');
+            } else {
+                clearSuggestions(slot);
+                hideResults(slot);
+                noResultsEl.classList.remove('hidden');
+            }
+        }
+
+        function showSuggestions(players, slot) {
+            const suggestionsEl = (slot === 1) ? searchSuggestions1 : searchSuggestions2;
+            suggestionsEl.innerHTML = '';
+            suggestionsEl.classList.remove('hidden');
+            
+            players.slice(0, 5).forEach((player, index) => {
+                const suggestionItem = document.createElement('div');
+                suggestionItem.className = 'p-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer text-sm';
+                suggestionItem.textContent = `${player.web_name} (${player.position} / ${player.team || 'N/A'}) - £${(player.cost || 0).toFixed(1)}m`;
+                
+                suggestionItem.addEventListener('click', () => {
+                    displayPlayerData(player, slot);
+                });
+                suggestionItem.addEventListener('mouseover', () => {
+                    removeActive(suggestionsEl.childNodes);
+                    suggestionItem.classList.add('suggestion-active');
+                    activeSuggestion[slot] = index;
+                });
+                suggestionsEl.appendChild(suggestionItem);
+            });
+        }
+
+        function clearSuggestions(slot) {
+            const suggestionsEl = (slot === 1) ? searchSuggestions1 : searchSuggestions2;
+            suggestionsEl.classList.add('hidden');
+            suggestionsEl.innerHTML = '';
+            activeSuggestion[slot] = -1;
+        }
+        
+        document.addEventListener('click', (e) => {
+            if (searchInput1 && searchSuggestions1 && !searchInput1.contains(e.target) && !searchSuggestions1.contains(e.target)) clearSuggestions(1);
+            if (searchInput2 && searchSuggestions2 && !searchInput2.contains(e.target) && !searchSuggestions2.contains(e.target)) clearSuggestions(2);
+        });
+
+        // --- Display Logic ---
+        function displayPlayerData(player, slot) {
+            if (slot === 1) {
+                currentPlayer1 = player;
+                searchInput1.value = player.web_name;
+            } else {
+                currentPlayer2 = player;
+                searchInput2.value = player.web_name;
+            }
+            clearSuggestions(slot);
+            updatePlayerDisplay(slot, player);
+        }
+
+        function updatePlayerDisplay(slot, player) {
+            const resultsEl = (slot === 1) ? results1 : results2;
+            const noResultsEl = (slot === 1) ? noResults1 : noResults2;
+            const cardEl = (slot === 1) ? playerCard1 : playerCard2;
+            const chartTitleEl = (slot === 1) ? chartTitle1 : chartTitle2;
+            const fixturesEl = (slot === 1) ? upcomingFixturesList1 : upcomingFixturesList2;
+            const chartCanvas = (slot === 1) ? chartCanvas1 : chartCanvas2;
+
+            const selectedModel = modelSelector.value;
+
+            // 1. Build Player Card HTML
+            const chance = player.chance_of_playing;
+            let statusText = '<p class="text-sm font-medium text-green-600 dark:text-green-500 mt-1">Available</p>';
+            if (player.news && chance < 100) {
+                const color = (chance === 0) ? 'red' : 'yellow';
+                statusText = `<p class="text-sm font-medium text-${color}-600 dark:text-${color}-500 mt-1">${player.news} (${chance}% chance)</p>`;
+            } else if (chance === 100 && player.news) {
+                 statusText = `<p class="text-sm font-medium text-green-600 dark:text-green-500 mt-1">${player.news}</p>`;
+            }
+
+            
+            cardEl.innerHTML = `
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-white text-3xl font-bold uppercase">${player.web_name.charAt(0)}</div>
+                    <div>
+                        <h2 class="text-3xl font-bold">${player.web_name}</h2>
+                        <p class="text-xl text-gray-600 dark:text-gray-400">${player.team || 'Unknown'} - <span class="font-bold">${player.position || 'UNK'}</span></p>
+                        ${statusText}
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg text-center">
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Cost</p>
+                        <p class="text-4xl font-bold">£${(player.cost || 0).toFixed(1)}m</p>
+                    </div>
+                    <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg text-center">
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Prev GW</p>
+                        <p class="text-4xl font-bold">${player.prev_gw_points}</p>
+                    </div>
+                    <div class="bg-indigo-100 dark:bg-indigo-900 p-4 rounded-lg text-center">
+                        <p class="text-sm font-medium text-indigo-600 dark:text-indigo-300 uppercase">Next GW</p>
+                        <p class="text-4xl font-bold text-indigo-600 dark:text-indigo-400">${(player.upcoming_predictions?.[0]?.predictions?.[selectedModel] ?? 0).toFixed(1)}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 font-semibold">vs. ${player.next_opponent || 'N/A'}</p>
+                    </div>
+                </div>
+            `;
+
+            // 2. Render Graph
+            const labels = player.last_5_gw_labels || ['?','?','?','?','?'];
+            chartTitleEl.textContent = `Points Trend (${labels[0]} - ${labels[4]})`;
+            renderPointsChart(
+                player.last_5_gw_points,
+                labels,
+                player.last_5_gw_opponents,
+                chartCanvas,
+                slot
+            );
+
+            // 3. Render Upcoming Fixtures
+            renderUpcomingFixtures(fixturesEl, player.upcoming_predictions, selectedModel);
+
+            resultsEl.classList.remove('hidden');
+            noResultsEl.classList.add('hidden');
+        }
+
+
+        function hideResults(slot) {
+            const resultsEl = (slot === 1) ? results1 : results2;
+            resultsEl.classList.add('hidden');
+        }
+
+        function renderUpcomingFixtures(element, fixtures, selectedModel) {
+            element.innerHTML = '';
+            if (!fixtures || fixtures.length === 0) {
+                 element.innerHTML = '<p class="text-gray-500 dark:text-gray-400 italic text-sm">No upcoming fixtures found.</p>';
+                 return;
+            }
+            fixtures.forEach(fixture => {
+                const predictedScore = (fixture.predictions?.[selectedModel] ?? 0.0);
+                const listItem = document.createElement('div');
+                listItem.className = 'flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700 last:border-b-0 text-sm';
+                listItem.innerHTML = `
+                    <div>
+                        <span class="font-semibold text-gray-700 dark:text-gray-300">GW ${fixture.gw}:</span>
+                        <span class="ml-2 text-gray-600 dark:text-gray-400">${fixture.opponent || 'Unknown'}</span>
+                    </div>
+                    <span class="font-bold text-lg text-indigo-600 dark:text-indigo-400">${predictedScore.toFixed(1)}</span>
+                `;
+                element.appendChild(listItem);
+            });
+        }
+
+        // --- Chart.js Logic ---
+        function renderPointsChart(data, labels, opponents, canvasEl, slot) {
+            let chartInstance = (slot === 1) ? chartInstance1 : chartInstance2;
+            if (chartInstance) chartInstance.destroy();
+
+            const safeData = (Array.isArray(data) && data.length === 5) ? data : [0,0,0,0,0];
+            const safeLabels = (Array.isArray(labels) && labels.length === 5) ? labels : ['?', '?', '?', '?', '?'];
+            const safeOpponents = (Array.isArray(opponents) && opponents.length === 5) ? opponents : ['-', '-', '-', '-', '-'];
+            
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const labelColor = isDark ? '#cbd5e1' : '#4b5563';
+            const pointColor = (slot === 1) ? '#4f46e5' : '#16a34a';
+            const lineColor = (slot === 1) ? '#6366f1' : '#22c55e';
+            const fillColor = isDark 
+                ? (slot === 1 ? 'rgba(79, 70, 229, 0.5)' : 'rgba(34, 197, 94, 0.5)')
+                : (slot === 1 ? 'rgba(199, 210, 254, 0.5)' : 'rgba(187, 247, 208, 0.5)');
+
+            const ctx = canvasEl.getContext('2d');
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: safeLabels,
+                    datasets: [{
+                        label: 'Points', data: safeData, borderColor: lineColor, backgroundColor: fillColor,
+                        tension: 0.3, borderWidth: 2, pointRadius: 4, pointBackgroundColor: pointColor,
+                        pointBorderColor: isDark ? '#1f2937' : '#ffffff', pointHoverRadius: 6, fill: true,
+                        pointOpponents: safeOpponents
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, suggestedMax: Math.max(...safeData, 5) + 2, ticks: { color: labelColor, precision: 0 }, grid: { color: gridColor, drawBorder: false } },
+                        x: { ticks: { color: labelColor }, grid: { display: false } }
+                    },
+                    plugins: {
+                         legend: { display: false },
+                         tooltip: {
+                             backgroundColor: isDark ? '#374151' : '#ffffff', titleColor: isDark ? '#f9fafb' : '#111827',
+                             bodyColor: isDark ? '#d1d5db' : '#374151', borderColor: isDark ? '#4b5563' : '#e5e7eb',
+                             borderWidth: 1, padding: 10, boxPadding: 4,
+                             callbacks: {
+                                 title: (tooltipItems) => tooltipItems[0].label || '',
+                                 label: (context) => {
+                                     const points = context.parsed.y;
+                                     const opponent = context.dataset.pointOpponents[context.dataIndex] || '-';
+                                     return ` Points: ${points} (vs ${opponent})`;
+                                 }
+                             }
+                         }
+                    },
+                    interaction: { intersect: false, mode: 'index' }
+                }
+            });
+            
+            if (slot === 1) chartInstance1 = chartInstance;
+            else chartInstance2 = chartInstance;
+        }
+
+        // --- Keyboard Navigation for Search ---
+        function addKeydownListener(inputEl, suggestionsEl, slot) {
+            inputEl.addEventListener('keydown', function(e) {
+                const items = suggestionsEl.getElementsByTagName('div');
+                if (items.length === 0) return;
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault(); 
+                    activeSuggestion[slot]++;
+                    if (activeSuggestion[slot] >= items.length) activeSuggestion[slot] = 0;
+                    addActive(items, slot);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault(); 
+                    activeSuggestion[slot]--;
+                    if (activeSuggestion[slot] < 0) activeSuggestion[slot] = items.length - 1;
+                    addActive(items, slot);
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (activeSuggestion[slot] > -1) {
+                        items[activeSuggestion[slot]].click(); // Trigger click
+                    }
+                }
+            });
+        }
+
+        function addActive(items, slot) {
+            removeActive(items);
+            if (!items[activeSuggestion[slot]]) return;
+            items[activeSuggestion[slot]].classList.add('suggestion-active');
+            items[activeSuggestion[slot]].scrollIntoView({ block: 'nearest' });
+        }
+
+        function removeActive(items) {
+            for (let i = 0; i < items.length; i++) {
+                items[i].classList.remove('suggestion-active');
+            }
+        }
+
+        addKeydownListener(searchInput1, searchSuggestions1, 1);
+        addKeydownListener(searchInput2, searchSuggestions2, 2);
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+pandas
+scikit-learn
+requests
+numpy
+joblib
+xgboost

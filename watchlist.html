@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPL Player Watchlists</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <style>
+        /* All the styles from your original file... */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px;}
+        .dark ::-webkit-scrollbar-track { background: #2d3748; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        body, .bg-white, .bg-gray-100, .bg-gray-50, .text-gray-900, .text-gray-600, .border-gray-200 {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        .animate-fadeIn { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans min-h-screen">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <header class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-bold">FPL Player Dashboard</h1>
+                <p class="text-gray-600 dark:text-gray-400 mt-1">ML-powered predictions to build your best squad.</p>
+            </div>
+            <button id="themeToggle" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none" aria-label="Toggle dark mode">
+                <svg id="themeIconSun" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /> </svg>
+                <svg id="themeIconMoon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /> </svg>
+            </button>
+        </header>
+
+        <nav class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg flex justify-center gap-4">
+            <a href="index.html" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">Home</a>
+            <a href="compare.html" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">Compare Players</a>
+            <a href="watchlist.html" class="px-4 py-2 text-sm font-bold bg-indigo-600 text-white rounded-md shadow">Watchlists</a>
+            <a href="squad.html" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">Squad Builder</a>
+        </nav>
+
+        <div class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="modelSelector" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Prediction Model</label>
+                    <select id="modelSelector" class="w-full p-2.5 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 font-bold focus:outline-none">
+                        </select>
+                </div>
+                <div>
+                    <label for="watchlistSelector" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Watchlist</label>
+                    <select id="watchlistSelector" class="w-full p-2.5 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 font-bold focus:outline-none">
+                        <option value="FWD">Top Forwards (FWD)</option>
+                        <option value="MID">Top Midfielders (MID)</option>
+                        <option value="DEF">Top Defenders (DEF)</option>
+                        <option value="GK">Top Goalkeepers (GK)</option>
+                        <option value="VALUE">Top Value (All Positions)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 animate-fadeIn">
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg text-center">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Total Players</p>
+                <p class="text-3xl font-bold" id="totalPlayers">--</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg text-center">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Available</p>
+                <p class="text-3xl font-bold text-green-600 dark:text-green-500" id="availablePlayers">--</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg text-center">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Injured / Doubtful</p>
+                <p class="text-3xl font-bold text-red-600 dark:text-red-500" id="injuredPlayers">--</p>
+            </div>
+        </div>
+
+        <div class="mb-6 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg animate-fadeIn">
+            <h2 class="text-2xl font-bold mb-4" id="watchlistTitle">Top 5 Forwards (FWD)</h2>
+            <div id="watchlistBox" class="space-y-3">
+                <p class="text-gray-500 dark:text-gray-400">Loading watchlist...</p>
+            </div>
+        </div>
+
+        <footer class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+            <p id="loadingStatus">Loading prediction data...</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // === JAVASCRIPT LOGIC ===
+
+        let ALL_PLAYER_DATA = [];
+        let ALL_MODELS = [];
+
+        // --- Get DOM elements ---
+        const modelSelector = document.getElementById('modelSelector');
+        const watchlistSelector = document.getElementById('watchlistSelector');
+        const watchlistTitle = document.getElementById('watchlistTitle');
+        const watchlistBox = document.getElementById('watchlistBox');
+        
+        const loadingStatus = document.getElementById('loadingStatus');
+
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIconMoon = document.getElementById('themeIconMoon');
+        const themeIconSun = document.getElementById('themeIconSun');
+
+        const totalPlayersEl = document.getElementById('totalPlayers');
+        const availablePlayersEl = document.getElementById('availablePlayers');
+        const injuredPlayersEl = document.getElementById('injuredPlayers');
+
+
+        // --- Dark Mode Logic ---
+        const applyTheme = (theme) => {
+            const isDark = theme === 'dark';
+            document.documentElement.classList.toggle('dark', isDark);
+            themeIconSun.classList.toggle('hidden', isDark);
+            themeIconMoon.classList.toggle('hidden', !isDark);
+        };
+        themeToggle.addEventListener('click', () => {
+            const newTheme = document.documentElement.classList.toggle('dark') ? 'dark' : 'light';
+            localStorage.theme = newTheme;
+            applyTheme(newTheme);
+        });
+        const savedTheme = localStorage.theme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        applyTheme(savedTheme);
+
+        // --- Data Fetching Logic ---
+        async function loadData() {
+            try {
+                const response = await fetch(`predictions.json?v=${new Date().getTime()}`);
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                
+                const responseText = await response.text();
+                if (responseText.includes('NaN')) {
+                    throw new Error("Invalid JSON: 'NaN' found in predictions.json. Please re-run 'python main.py'.");
+                }
+
+                ALL_PLAYER_DATA = JSON.parse(responseText);
+                
+                if (!Array.isArray(ALL_PLAYER_DATA) || ALL_PLAYER_DATA.length === 0) {
+                     throw new Error("'predictions.json' is empty or not a valid array.");
+                }
+                
+                const firstPlayerWithData = ALL_PLAYER_DATA.find(p => p.upcoming_predictions && p.upcoming_predictions.length > 0 && p.upcoming_predictions[0].predictions);
+                if (firstPlayerWithData) {
+                    ALL_MODELS = Object.keys(firstPlayerWithData.upcoming_predictions[0].predictions);
+                    modelSelector.innerHTML = ALL_MODELS.map(model => {
+                        const isRecommended = model.includes('XGBoost') || model.includes('Random Forest');
+                        return `<option value="${model}">${model}${isRecommended ? ' (Rec.)' : ''}</option>`
+                    }).join('');
+                    if (ALL_MODELS.includes('XGBoost')) {
+                        modelSelector.value = 'XGBoost';
+                    }
+                } else {
+                    console.warn("No players found with valid prediction data. Using default model list.");
+                }
+
+                loadingStatus.textContent = `Successfully loaded ${ALL_PLAYER_DATA.length} players.`;
+                
+                calculateGlobalStats();
+                generateWatchlists();
+                
+                console.log("Loaded player prediction data:", ALL_PLAYER_DATA);
+
+            } catch (error) {
+                console.error("Error loading predictions.json:", error);
+                loadingStatus.innerHTML = `
+                    <strong class="text-red-600 dark:text-red-400">Error: Could not load data.</strong><br>
+                    ${error.message}<br>
+                    <strong>To fix:</strong>
+                    <ol class="list-decimal list-inside">
+                        <li>Run <code class="bg-gray-200 dark:bg-gray-700 p-1 rounded">python main.py</code> to regenerate 'predictions.json'.</li>
+                        <li>Make sure your server <code class="bg-gray-200 dark:bg-gray-700 p-1 rounded">python -m http.server</code> is running.</li>
+                        <li>Refresh the page.</li>
+                    </ol>`;
+            }
+        }
+        document.addEventListener('DOMContentLoaded', loadData);
+
+        // --- Global Stats Function ---
+        function calculateGlobalStats() {
+            const totalPlayers = ALL_PLAYER_DATA.length;
+            const availablePlayers = ALL_PLAYER_DATA.filter(p => p.chance_of_playing === 100 || p.chance_of_playing == null).length;
+            const injuredPlayers = totalPlayers - availablePlayers;
+
+            totalPlayersEl.textContent = totalPlayers;
+            availablePlayersEl.textContent = availablePlayers;
+            injuredPlayersEl.textContent = injuredPlayers;
+        }
+
+        // --- Global Control Listeners ---
+        modelSelector.addEventListener('change', generateWatchlists);
+        watchlistSelector.addEventListener('change', generateWatchlists);
+
+        // --- Watchlist Logic ---
+        function generateWatchlists() {
+            if (ALL_PLAYER_DATA.length === 0) return;
+
+            const selectedModel = modelSelector.value;
+            const selectedWatchlist = watchlistSelector.value;
+
+            let filteredList = [];
+            let title = '';
+
+            if (selectedWatchlist === 'VALUE') {
+                filteredList = ALL_PLAYER_DATA.filter(p => p.cost > 0 && p.upcoming_predictions && p.upcoming_predictions.length > 0);
+                title = 'Top 5 Value Players (All)';
+            } else {
+                filteredList = ALL_PLAYER_DATA.filter(p => p.position === selectedWatchlist && p.upcoming_predictions && p.upcoming_predictions.length > 0);
+                title = `Top 5 ${watchlistSelector.options[watchlistSelector.selectedIndex].text}`;
+            }
+
+            const sortedList = filteredList.map(player => {
+                const nextGwPred = player.upcoming_predictions[0]?.predictions?.[selectedModel] ?? 0;
+                let score = nextGwPred;
+                
+                if (selectedWatchlist === 'VALUE') {
+                    score = (nextGwPred / player.cost); 
+                }
+                return { ...player, score: score };
+            })
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 5); 
+
+            // Display
+            watchlistTitle.textContent = title;
+            watchlistBox.innerHTML = '';
+            if (sortedList.length === 0) {
+                watchlistBox.innerHTML = '<p class="text-gray-500 dark:text-gray-400">No players found for this category.</p>';
+                return;
+            }
+
+            sortedList.forEach((player, index) => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer';
+                
+                // *** UPDATED: On click, navigate to compare.html with the player ID ***
+                item.onclick = () => {
+                    // We pass the player's 'id' (which is the element_id)
+                    window.location.href = `compare.html?player1=${player.id}`;
+                };
+                
+                const scoreLabel = selectedWatchlist === 'VALUE' ? 'Value' : 'xPts';
+
+                item.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <span class="font-bold text-lg text-gray-400 dark:text-gray-500">${index + 1}</span>
+                        <div class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-sm font-bold uppercase">${player.web_name.slice(0, 2)}</div>
+                        <div>
+                            <p class="font-semibold">${player.web_name}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">${player.position} / ${player.team} - £${(player.cost || 0).toFixed(1)}m</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-lg font-bold text-indigo-600 dark:text-indigo-400">${player.score.toFixed(2)}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">${scoreLabel} (${selectedModel})</p>
+                    </div>
+                `;
+                watchlistBox.appendChild(item);
+            });
+        }
+    </script>
+</body>
+</html>

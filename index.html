@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPL Dashboard Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <style>
+        /* Base scrollbar styles */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px;}
+        .dark ::-webkit-scrollbar-track { background: #2d3748; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+        .dark body { background-color: #111827; } /* Darker background for home */
+        
+        /* Card styles */
+        .nav-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+        .dark .nav-card {
+            background-color: #1f2937; /* gray-800 */
+            border-color: #374151; /* gray-700 */
+        }
+        .nav-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+        .nav-card h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #4f46e5; /* indigo-600 */
+        }
+        .dark .nav-card h2 {
+            color: #818cf8; /* indigo-400 */
+        }
+        .nav-card p {
+            font-size: 1rem;
+            color: #4b5563; /* gray-600 */
+        }
+        .dark .nav-card p {
+            color: #d1d5db; /* gray-300 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans min-h-screen">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+
+        <header class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-bold">FPL Player Dashboard</h1>
+                <p class="text-gray-600 dark:text-gray-400 mt-1">ML-powered predictions to build your best squad.</p>
+            </div>
+            <button id="themeToggle" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none" aria-label="Toggle dark mode">
+                <svg id="themeIconSun" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /> </svg>
+                <svg id="themeIconMoon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /> </svg>
+            </button>
+        </header>
+
+        <nav class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg flex justify-center gap-4">
+            <a href="index.html" class="px-4 py-2 text-sm font-bold bg-indigo-600 text-white rounded-md shadow">Home</a>
+            <a href="compare.html" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">Compare Players</a>
+            <a href="watchlist.html" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">Watchlists</a>
+            <a href="squad.html" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">Squad Builder</a>
+        </nav>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            <a href="compare.html" class="nav-card">
+                <h2>Player vs. Player</h2>
+                <p>Compare two players side-by-side with detailed stats and future predictions.</p>
+            </a>
+            
+            <a href="watchlist.html" class="nav-card">
+                <h2>Top Watchlists</h2>
+                <p>Find the top 5 players by position or value based on your selected ML model.</p>
+            </a>
+            
+            <a href="squad.html" class="nav-card">
+                <h2>Optimal Squad Builder</h2>
+                <p>Build your perfect 15-man squad within the £100m budget based on predicted points.</p>
+            </a>
+        </div>
+        
+    </div>
+
+    <script>
+        // --- Dark Mode Logic ---
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIconMoon = document.getElementById('themeIconMoon');
+        const themeIconSun = document.getElementById('themeIconSun');
+
+        const applyTheme = (theme) => {
+            const isDark = theme === 'dark';
+            document.documentElement.classList.toggle('dark', isDark);
+            themeIconSun.classList.toggle('hidden', isDark);
+            themeIconMoon.classList.toggle('hidden', !isDark);
+        };
+        themeToggle.addEventListener('click', () => {
+            const newTheme = document.documentElement.classList.toggle('dark') ? 'dark' : 'light';
+            localStorage.theme = newTheme;
+            applyTheme(newTheme);
+        });
+        const savedTheme = localStorage.theme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        applyTheme(savedTheme);
+    </script>
+</body>
+</html>
