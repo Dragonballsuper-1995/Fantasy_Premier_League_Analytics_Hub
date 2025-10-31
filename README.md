@@ -1,6 +1,6 @@
 # Fantasy Premier League Analytics Hub
 
-[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-brightgreen?style=for-the-badge&logo=github)](https://dragonballsuper-1995.github.io/FPL_Points_Predictor_Dynamic/) 
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-brightgreen?style=for-the-badge&logo=github)](https://dragonballsuper-1995.github.io/Fantasy_Premier_League_Analytics_Hub/) 
 [![Daily Prediction Update](https://github.com/Dragonballsuper-1995/FPL_Points_Predictor_Dynamic/actions/workflows/update_predictions.yml/badge.svg)](https://github.com/Dragonballsuper-1995/FPL_Points_Predictor_Dynamic/actions/workflows/update_predictions.yml)
 
 A fully automated web-based dashboard for Fantasy Premier League (FPL) managers. This project uses machine learning and a GitHub Action to fetch live data, run predictions, and update the website daily.
