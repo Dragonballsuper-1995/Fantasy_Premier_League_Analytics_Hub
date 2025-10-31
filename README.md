@@ -1,4 +1,4 @@
-# FPL Points Predictor (Automated Version)
+# Fantasy Premier League Analytics Hub
 
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-brightgreen?style=for-the-badge&logo=github)](https://dragonballsuper-1995.github.io/FPL_Points_Predictor_Dynamic/) 
 [![Daily Prediction Update](https://github.com/Dragonballsuper-1995/FPL_Points_Predictor_Dynamic/actions/workflows/update_predictions.yml/badge.svg)](https://github.com/Dragonballsuper-1995/FPL_Points_Predictor_Dynamic/actions/workflows/update_predictions.yml)
