@@ -562,14 +562,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FPL Player Comparison</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         tailwind.config = { darkMode: 'class' }
     </script>
-    <link rel="icon" type="image/png" href="favicon/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg" />
-    <link rel="shortcut icon" href="favicon/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png" />
-    <link rel="manifest" href="favicon/site.webmanifest" />
     <style>
         /* Base scrollbar styles */
         ::-webkit-scrollbar { width: 8px; }
@@ -748,10 +744,8 @@
             
             if (bg) {
                 if (isDark) {
-                    // DARK MODE: Less prominent
                     bg.style.background = `radial-gradient(circle at 50% 50%, rgba(217, 119, 6, 0.1), rgba(28, 25, 23, 0) 40%)`;
                 } else {
-                    // LIGHT MODE: More prominent
                     bg.style.background = `radial-gradient(circle at 50% 50%, rgba(217, 119, 6, 0.15), rgba(255, 251, 235, 0) 40%)`;
                 }
             }
@@ -774,11 +768,9 @@
             const x = Math.round((clientX / window.innerWidth) * 100);
             const y = Math.round((clientY / window.innerHeight) * 100);
             if (document.documentElement.classList.contains('dark')) {
-                // DARK MODE: Less prominent
                 bg.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(217, 119, 6, 0.1), rgba(28, 25, 23, 0) 40%)`;
             } else {
-                // LIGHT MODE: More prominent
-                bg.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(217, 119, 6, 0.2), rgba(255, 251, 235, 0) 40%)`;
+                bg.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(217, 119, 6, 0.15), rgba(255, 251, 235, 0) 40%)`;
             }
         });
         
@@ -849,6 +841,8 @@
             if (currentPlayer1) updatePlayerDisplay(1, currentPlayer1);
             if (currentPlayer2) updatePlayerDisplay(2, currentPlayer2);
         });
+
+        // --- ALL FUNCTIONS BELOW THIS LINE WERE MISSING ---
 
         // --- Search Logic ---
         searchInput1.addEventListener('input', (e) => handleSearch(e.target.value, 1));
