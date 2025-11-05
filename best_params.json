@@ -1,0 +1,38 @@
+{
+    "Linear Regression": {},
+    "Ridge Regression": {
+        "alpha": 50.0
+    },
+    "Lasso Regression": {
+        "alpha": 0.001
+    },
+    "Support Vector (SVR)": {
+        "gamma": "auto",
+        "epsilon": 0.1,
+        "C": 10
+    },
+    "Random Forest": {
+        "n_estimators": 300,
+        "min_samples_split": 5,
+        "min_samples_leaf": 4,
+        "max_depth": 30
+    },
+    "XGBoost": {
+        "subsample": 0.8,
+        "n_estimators": 200,
+        "max_depth": 7,
+        "learning_rate": 0.01,
+        "colsample_bytree": 0.7
+    },
+    "LightGBM": {
+        "num_leaves": 31,
+        "n_estimators": 200,
+        "max_depth": 10,
+        "learning_rate": 0.01
+    },
+    "CatBoost": {
+        "learning_rate": 0.05,
+        "iterations": 200,
+        "depth": 6
+    }
+}

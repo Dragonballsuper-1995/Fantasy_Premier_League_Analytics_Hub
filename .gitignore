@@ -12,3 +12,9 @@ trained_models/
 
 # OS-specific files
 .DS_Store
+
+# IDE folders
+.vscode/
+
+# CatBoost log files
+catboost_info/
