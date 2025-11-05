@@ -1,0 +1,3 @@
+/* Compare page specific styles */
+.suggestion-active { background-color: #d97706; color: #ffffff; }
+.dark .suggestion-active { background-color: #f59e0b; }

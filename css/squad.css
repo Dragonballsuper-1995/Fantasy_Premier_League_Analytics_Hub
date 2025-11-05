@@ -1,0 +1,176 @@
+/* Squad builder page specific styles */
+.squad-pitch {
+	max-width: 500px;
+	margin: 1rem auto 0 auto;
+	background: linear-gradient(to bottom, #3f6212, #1a2e05);
+	border-radius: 8px;
+	position: relative;
+	overflow: hidden;
+	border: 1px solid rgba(0,0,0,0.1);
+}
+.dark .squad-pitch {
+	background: linear-gradient(to bottom, #365314, #1a2e05);
+	border: 1px solid rgba(255,255,255,0.1);
+}
+.pitch-rows-overlay {
+	position: relative;
+	z-index: 5;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: 2rem 0.5rem;
+	min-height: 480px;
+}
+.pitch-line-half {
+	position: absolute; top: 50%; left: 0; right: 0;
+	height: 2px;
+	background-color: rgba(255, 255, 255, 0.2);
+	z-index: 1;
+}
+.pitch-line-box-top {
+	position: absolute; top: -1px; left: 15%; right: 15%;
+	height: 22%;
+	border: 2px solid rgba(255, 255, 255, 0.2);
+	border-top: none;
+	border-bottom-left-radius: 8px;
+	border-bottom-right-radius: 8px;
+	z-index: 1;
+}
+.pitch-line-box-bottom {
+	position: absolute; bottom: -1px; left: 15%; right: 15%;
+	height: 22%;
+	border: 2px solid rgba(255, 255, 255, 0.2);
+	border-bottom: none;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+	z-index: 1;
+}
+.pitch-row {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	margin: 0.5rem 0;
+}
+.player-box {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	width: 80px;
+	min-height: 70px;
+	border-radius: 6px;
+	background-color: #fefce8;
+	color: #1c1917;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+	font-size: 0.7rem;
+	font-weight: 600;
+	line-height: 1.2;
+	padding: 8px 4px 4px 4px;
+	word-break: break-word;
+	flex-shrink: 0;
+	border: 1px solid #fefce8;
+}
+.dark .player-box {
+	background-color: #44403c;
+	color: #f5f5f4;
+	border-color: #57534e;
+}
+.player-box-name {
+	font-weight: 700;
+	font-size: 0.8rem;
+	margin-bottom: 2px;
+}
+.player-box-team {
+	font-size: 0.65rem;
+	color: #57534e;
+	margin-bottom: 4px;
+}
+.dark .player-box-team {
+	color: #d6d3d1;
+}
+.player-box-info {
+	font-weight: 700;
+	font-size: 0.75rem;
+	display: flex;
+	flex-direction: column;
+	margin-top: auto;
+}
+.player-box-score { color: #b45309; }
+.dark .player-box-score { color: #f59e0b; }
+.player-box-price { color: #78716c; }
+.dark .player-box-price { color: #a8a29e; }
+.player-badges-container {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	z-index: 10;
+}
+.player-badge {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	font-size: 0.7rem;
+	font-weight: 700;
+	color: #ffffff;
+	box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.player-captain { background-color: #1c1917; }
+.dark .player-captain { background-color: #000000; }
+.player-vice-captain { background-color: #f97316; }
+.dark .player-vice-captain { background-color: #fb923c; }
+.player-star { background-color: #eab308; color: #422006; }
+.squad-bench-container {
+	max-width: 500px;
+	margin: 1rem auto 0 auto;
+	padding: 1rem;
+	background-color: #f5f5f4;
+	border-radius: 8px;
+}
+.dark .squad-bench-container { background-color: #292524; }
+.bench-position-group { margin-bottom: 0.75rem; }
+.bench-position-group:last-child { margin-bottom: 0; }
+.bench-position-label {
+	font-weight: 700;
+	font-size: 0.75rem;
+	text-transform: uppercase;
+	color: #78716c;
+	margin-bottom: 0.25rem;
+	padding-left: 0.25rem;
+}
+.dark .bench-position-label { color: #a8a29e; }
+.bench-players-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.bench-player-box {
+	position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+	text-align: center; width: 70px; min-height: 60px; border-radius: 6px; background-color: #e7e5e4; color: #1c1917;
+	box-shadow: 0 1px 2px rgba(0,0,0,0.1); font-size: 0.6rem; font-weight: 600; line-height: 1.1; padding: 8px 2px 2px 2px; word-break: break-word; flex-shrink: 0;
+}
+.dark .bench-player-box { background-color: #57534e; color: #f5f5f4; }
+.bench-player-box .player-box-name { font-size: 0.7rem; margin-bottom: 2px; }
+.bench-player-box .player-box-team { font-size: 0.6rem; color: #44403c; margin-bottom: 3px; }
+.dark .bench-player-box .player-box-team { color: #d6d3d1; }
+.bench-player-box .player-box-info { font-size: 0.65rem; margin-top: auto; }
+.squad-list-container { max-width: 500px; margin: 1rem auto 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; }
+.dark .squad-list-container { background-color: #292524; }
+.squad-list-player {
+	display: flex; align-items: center; padding: 0.5rem 0.75rem; border-bottom: 1px solid #e7e5e4; font-size: 0.875rem;
+}
+.dark .squad-list-player { border-bottom-color: #44403c; }
+.squad-list-player:last-child { border-bottom: none; }
+.squad-list-badges { display: flex; gap: 4px; margin-right: 8px; width: 20px; flex-shrink: 0; }
+.squad-list-badges .player-badge { width: 14px; height: 14px; font-size: 0.65rem; }
+.squad-list-info { flex-grow: 1; }
+.squad-list-name { font-weight: 600; }
+.squad-list-team { font-size: 0.75rem; color: #57534e; }
+.dark .squad-list-team { color: #a8a29e; }
+.squad-list-stats { text-align: right; flex-shrink: 0; }
+.squad-list-price { font-weight: 600; font-size: 0.8rem; }
+.squad-list-score { font-weight: 700; font-size: 0.9rem; color: #b45309; }
+.dark .squad-list-score { color: #f59e0b; }

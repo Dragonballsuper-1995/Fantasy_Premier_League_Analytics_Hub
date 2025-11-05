@@ -5,7 +5,6 @@ from model_training import get_models, train_models, save_models, POSITIONS
 import os
 
 def load_data(filepath, file_type):
-    """ Loads a CSV, skipping bad lines. """
     try:
         df = pd.read_csv(filepath, on_bad_lines='skip', encoding='utf-8', low_memory=False)
         if df.empty:
@@ -18,7 +17,6 @@ def load_data(filepath, file_type):
 def run_training():
     print("--- Starting Offline Model Training ---")
 
-    # --- 1. LOAD TRAINING DATA ---
     print(f"Loading training data (2024-25 season) from {TRAIN_DATA_URL}...")
     train_df = load_data(TRAIN_DATA_URL, "Training")
     teams_df = load_data(TEAMS_URL, "Teams")
@@ -34,7 +32,6 @@ def run_training():
     train_df = train_df.dropna(subset=['GW', 'position'])
     train_df['GW'] = train_df['GW'].astype(int)
 
-    # --- 2. LOOP THROUGH POSITIONS, TRAIN, AND SAVE ---
     for pos in POSITIONS:
         print(f"\n--- Processing models for {pos} ---")
         
@@ -59,7 +56,6 @@ def run_training():
             save_models(trained_models, pos)
 
     print("\n--- Offline training complete. All models saved. ---")
-
 
 if __name__ == "__main__":
     run_training()

@@ -1,0 +1,48 @@
+/* Common styles shared across pages */
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #fffbeb; border-radius: 10px; }
+.dark ::-webkit-scrollbar-track { background: #1c1917; }
+::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 10px; }
+.dark ::-webkit-scrollbar-thumb { background: #57534e; }
+
+/* Background glow element */
+#animated-bg {
+	position: fixed;
+	top: 0; left: 0; right: 0; bottom: 0;
+	z-index: -10;
+	transition: background 0.2s ease-out;
+}
+
+/* Smooth theme transitions */
+body, .bg-white, .bg-stone-100, .bg-stone-50, .text-stone-900, .text-stone-600, .border-stone-200 {
+	transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Simple fade-in animation */
+.animate-fadeIn { animation: fadeIn 0.5s ease-in-out; }
+@keyframes fadeIn {
+	from { opacity: 0; transform: translateY(10px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+/* Top navigation link behavior */
+.nav-link {
+	transition: all 0.2s ease;
+	border-bottom: 2px solid transparent;
+	padding-bottom: 4px;
+}
+.nav-link:hover {
+	color: #d97706;
+	border-bottom-color: #d97706;
+}
+.nav-active {
+	color: #d97706 !important;
+	font-weight: 600;
+	border-bottom-color: #d97706;
+}
+.dark .nav-active {
+	color: #f59e0b !important;
+	border-bottom-color: #f59e0b;
+}

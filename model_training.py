@@ -1,6 +1,6 @@
 import os
 import joblib
-import json # <-- NEW IMPORT
+import json 
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
@@ -9,22 +9,13 @@ import pandas as pd
 import lightgbm as lgb
 import catboost as cb
 
-# Define the directory to save models
 MODEL_DIR = "trained_models"
-os.makedirs(MODEL_DIR, exist_ok=True) # Create the directory if it doesn't exist
+os.makedirs(MODEL_DIR, exist_ok=True)
 
 POSITIONS = ['GK', 'DEF', 'MID', 'FWD']
 PARAMS_FILE = 'best_params.json'
 
-# *** NEW: Function to load parameters from file ***
-def load_best_parameters():
-    """
-    Loads tuned parameters from best_params.json.
-    If the file doesn't exist, it returns default parameters.
-    """
-    
-    # These are your original, un-tuned parameters.
-    # They will be used as a fallback if best_params.json is not found.
+def load_best_parameters():    
     DEFAULT_PARAMS = {
         "Linear Regression": {},
         "Ridge Regression": {'alpha': 1.0},
@@ -45,17 +36,12 @@ def load_best_parameters():
             best_params = json.load(f)
         print(f"Successfully loaded tuned parameters from '{PARAMS_FILE}'.")
         
-        # Merge with defaults to add random_state, n_jobs etc.
-        # This ensures keys not in the JSON (like 'random_state') are still set.
         for model_name, params in DEFAULT_PARAMS.items():
             if model_name in best_params:
-                # Start with default params (like random_state)
-                # and overwrite with tuned params (like alpha)
                 full_params = params.copy()
                 full_params.update(best_params[model_name])
                 best_params[model_name] = full_params
             else:
-                # If model is not in JSON, use its default
                 best_params[model_name] = params
                 
         return best_params
@@ -66,16 +52,9 @@ def load_best_parameters():
 
 
 def get_models():
-    """ 
-    Returns a dictionary of 8 different regression models,
-    initialized with the best parameters from best_params.json.
-    """
-    
-    # Load parameters from file (or defaults if file not found)
     params = load_best_parameters()
     
     models = {
-        # The ** operator unpacks the dictionary of parameters
         "Linear Regression": LinearRegression(**params.get("Linear Regression", {})),
         "Ridge Regression": Ridge(**params.get("Ridge Regression", {})),
         "Lasso Regression": Lasso(**params.get("Lasso Regression", {})),
@@ -88,7 +67,6 @@ def get_models():
     return models
 
 def train_models(models, X_train, y_train):
-    """ Trains all models in the dictionary. """
     trained_models = {}
     X_train_numeric = X_train.apply(pd.to_numeric, errors='coerce').fillna(0)
 
@@ -103,9 +81,6 @@ def train_models(models, X_train, y_train):
     return trained_models
 
 def save_models(trained_models, position):
-    """ 
-    Saves the trained models with a position prefix.
-    """
     for name, model in trained_models.items():
         filename = os.path.join(MODEL_DIR, f"{position}_{name.replace(' ', '_')}.joblib")
         try:
@@ -115,9 +90,6 @@ def save_models(trained_models, position):
             print(f"    Error saving {name}: {e}")
 
 def load_models():
-    """ 
-    Loads all pre-trained models
-    """
     loaded_models = {}
     model_names = get_models().keys()
     

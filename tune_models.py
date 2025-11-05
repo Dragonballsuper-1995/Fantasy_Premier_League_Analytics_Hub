@@ -8,15 +8,12 @@ import xgboost as xgb
 import lightgbm as lgb
 import catboost as cb
 import time
-import json # <-- NEW IMPORT
+import json
 
-# Import your existing helper functions
 from config import TRAIN_DATA_URL, TEAMS_URL
 from feature_engineering import get_team_strength, create_features
 
-# Helper function to load data (same as in train_offline.py)
 def load_data(filepath, file_type):
-    """ Loads a CSV, skipping bad lines. """
     try:
         df = pd.read_csv(filepath, on_bad_lines='skip', encoding='utf-8', low_memory=False)
         if df.empty:
@@ -27,18 +24,10 @@ def load_data(filepath, file_type):
         return pd.DataFrame()
 
 def get_models_and_param_grids():
-    """
-    Returns a dictionary of models and their corresponding hyperparameter search spaces.
-    """
-    
-    # Define the parameter grids for each model
-    # We use small, smart grids for RandomizedSearch to get results fast.
-    # We use full grids for GridSearch on fast models.
-    
     param_grids = {
         "Linear Regression": {
             "model": LinearRegression(),
-            "grid": {}, # No parameters to tune
+            "grid": {},
             "search_type": "grid"
         },
         "Ridge Regression": {
@@ -46,14 +35,14 @@ def get_models_and_param_grids():
             "grid": {
                 'alpha': [0.1, 1.0, 10.0, 50.0, 100.0]
             },
-            "search_type": "grid" # Fast, so we can use GridSearch
+            "search_type": "grid"
         },
         "Lasso Regression": {
             "model": Lasso(),
             "grid": {
                 'alpha': [0.001, 0.01, 0.1, 1.0, 10.0]
             },
-            "search_type": "grid" # Fast, so we can use GridSearch
+            "search_type": "grid"
         },
         "Support Vector (SVR)": {
             "model": SVR(),
@@ -62,7 +51,7 @@ def get_models_and_param_grids():
                 'gamma': ['scale', 'auto'],
                 'epsilon': [0.1, 0.2, 0.5]
             },
-            "search_type": "random" # Slow, use RandomizedSearch
+            "search_type": "random"
         },
         "Random Forest": {
             "model": RandomForestRegressor(random_state=42, n_jobs=-1),
@@ -72,7 +61,7 @@ def get_models_and_param_grids():
                 'min_samples_leaf': [1, 2, 4],
                 'min_samples_split': [2, 5, 10]
             },
-            "search_type": "random" # Slow, use RandomizedSearch
+            "search_type": "random"
         },
         "XGBoost": {
             "model": xgb.XGBRegressor(objective='reg:squarederror', random_state=42, n_jobs=-1),
@@ -83,7 +72,7 @@ def get_models_and_param_grids():
                 'subsample': [0.7, 0.8, 0.9, 1.0],
                 'colsample_bytree': [0.7, 0.8, 0.9, 1.0]
             },
-            "search_type": "random" # Slow, use RandomizedSearch
+            "search_type": "random"
         },
         "LightGBM": {
             "model": lgb.LGBMRegressor(random_state=42, n_jobs=-1),
@@ -93,7 +82,7 @@ def get_models_and_param_grids():
                 'num_leaves': [31, 50, 70],
                 'max_depth': [-1, 10, 20]
             },
-            "search_type": "random" # Slow, use RandomizedSearch
+            "search_type": "random"
         },
         "CatBoost": {
             "model": cb.CatBoostRegressor(random_state=42, verbose=0, thread_count=-1),
@@ -102,19 +91,14 @@ def get_models_and_param_grids():
                 'learning_rate': [0.01, 0.05, 0.1],
                 'depth': [4, 6, 8, 10],
             },
-            "search_type": "random" # Slow, use RandomizedSearch
+            "search_type": "random"
         }
     }
     return param_grids
 
 def run_tuning():
-    """
-    Loads all data, performs hyperparameter tuning on all models,
-    and prints the best parameters for each.
-    """
     print("--- Starting Hyperparameter Tuning ---")
     
-    # --- 1. Load Data ---
     print(f"Loading training data (2024-25 season) from {TRAIN_DATA_URL}...")
     train_df = load_data(TRAIN_DATA_URL, "Training")
     teams_df = load_data(TEAMS_URL, "Teams")
@@ -130,7 +114,6 @@ def run_tuning():
     train_df = train_df.dropna(subset=['GW', 'position'])
     train_df['GW'] = train_df['GW'].astype(int)
 
-    # --- 2. Create Features (using ALL positions) ---
     print("Creating features for all positions...")
     X_train, y_train, _ = create_features(train_df, team_name_map)
     X_train = X_train.apply(pd.to_numeric, errors='coerce').fillna(0)
@@ -139,15 +122,12 @@ def run_tuning():
         print("Feature creation resulted in empty data. Skipping.")
         return
 
-    # --- 3. Get Models and Grids ---
     models_to_tune = get_models_and_param_grids()
     best_params_all = {}
 
-    # --- 4. Run Tuning ---
     for name, config in models_to_tune.items():
         if not config["grid"]:
             print(f"\nSkipping {name} (no parameters to tune).")
-            # *** NEW: Still add it to the params file ***
             best_params_all[name] = {}
             continue
         
@@ -185,11 +165,9 @@ def run_tuning():
         
         best_params_all[name] = search.best_params_
 
-    # --- 5. Print and SAVE Final Results ---
     print("\n\n--- ALL TUNING COMPLETE ---")
     print("Saving best parameters to best_params.json...")
     
-    # *** NEW: Save results to a JSON file ***
     try:
         with open('best_params.json', 'w') as f:
             json.dump(best_params_all, f, indent=4)

@@ -1,50 +1,48 @@
 name: Daily Prediction Update
 
 on:
-  # 1. Run on a schedule (cron):
-  # This runs at 08:00 UTC every day.
+  # 1. Run automatically on 08:00 UTC every day:
   schedule:
     - cron: '0 8 * * *'
 
   # 2. Allow manual runs:
-  # This adds a "Run workflow" button to your GitHub Actions tab
   workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     
-    # This gives the action permission to push the new predictions.json
+    # Set the permission to push new predictions.json file:
     permissions:
       contents: write
 
     steps:
-      # Step 1: Check out your repository's code
+      # Step 1: Check out your repository's code:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up a Python environment
+      # Step 2: Set up a Python environment:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10' 
 
-      # Step 3: Install all your Python dependencies
+      # Step 3: Install all your Python dependencies:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           # This installs pandas, scikit-learn, xgboost, lightgbm, and catboost
           pip install -r requirements.txt
 
-      # Step 4: Re-train the models (using best_params.json)
+      # Step 4: Re-train the models using train_offline.py which uses best parameter values from best_params.json:
       - name: Re-train models
         run: python train_offline.py
 
-      # Step 5: Run the main prediction script (generates predictions.json)
+      # Step 5: Run the main.py, which generates predictions.json:
       - name: Run prediction script
         run: python main.py
 
-      # Step 6: Commit the new predictions.json back to your repo
+      # Step 6: Commit the new predictions.json file to the repo:
       - name: Commit and push updated predictions
         uses: stefanzweifel/git-auto-commit-action@v5
         with:

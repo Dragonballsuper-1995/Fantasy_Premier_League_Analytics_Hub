@@ -1,0 +1,34 @@
+/* Homepage specific cards */
+.nav-card {
+	background-color: #ffffff;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+	padding: 2rem;
+	text-align: center;
+	transition: all 0.3s ease;
+	border: 1px solid #e7e5e4;
+}
+.dark .nav-card {
+	background-color: #292524;
+	border-color: #44403c;
+}
+.nav-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 8px 25px rgba(217, 119, 6, 0.1);
+	border-color: #d97706;
+}
+.nav-card h2 {
+	font-size: 1.5rem;
+	font-weight: 700;
+	margin-bottom: 0.5rem;
+	color: #b45309;
+}
+.dark .nav-card h2 {
+	color: #f59e0b;
+}
+.nav-card p {
+	color: #57534e;
+}
+.dark .nav-card p {
+	color: #d6d3d1;
+}

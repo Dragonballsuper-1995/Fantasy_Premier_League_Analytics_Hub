@@ -2,9 +2,7 @@
 __pycache__/
 *.pyc
 
-# Ignore the models created by the action
-# We re-train them every time, so we don't need to
-# store them in the repo.
+# Ignore the pre trained model files.
 trained_models/
 
 # Ignore local data files (we use URLs now)
